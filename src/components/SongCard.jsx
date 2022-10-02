@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveSong, playPause } from "../redux/features/playerSlice.js";
+import PlayPause from "./PlayPause.jsx";
 
-const SongCard = ({ song, i }) => {
-  const activeSong = "test";
-  console.log(song);
+const SongCard = ({ song, i, data, activeSong, isPlaying }) => {
   const dispatch = useDispatch();
+  const handlePauseClick = () => {
+    dispatch(playPause(false));
+  };
+  const handlePlayClick = () => {
+    dispatch(setActiveSong({ song, data, i }));
+    dispatch(playPause(true));
+  };
   return (
     <div className="flex flex-col w-[250px] p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer">
       <div className="relative w-full h-56 group">
@@ -15,7 +21,32 @@ const SongCard = ({ song, i }) => {
               ? "flex bg-black bg-opacity-70"
               : "hidden"
           }`}
-        ></div>
+        >
+          <PlayPause
+            isPlaying={isPlaying}
+            activeSong={activeSong}
+            song={song}
+            handlePause={handlePauseClick}
+            handlePlay={handlePlayClick}
+          />
+        </div>
+        <img src={song?.images?.coverart} alt="songs-images" />
+      </div>
+      <div className="mt-4 flex flex-col text-white ">
+        <p className="font-semibold truncate text-lg">
+          <Link to={`/songs/${song?.key}`}>{song?.title}</Link>
+        </p>
+        <p className="text-sm truncate text-gray-300 mt-1">
+          <Link
+            to={
+              song?.artists
+                ? `/artists/${song?.artists[0]?.adamid}`
+                : "/top-artists"
+            }
+          >
+            {song?.subtitle}
+          </Link>
+        </p>
       </div>
     </div>
   );
